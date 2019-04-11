@@ -1,6 +1,3 @@
-
-
-
 import logging
 
 from fedora_messaging.config import conf
@@ -19,8 +16,7 @@ class JoyStickController(object):
         self.config = conf["consumer_config"]
 
     def __call__(self, msg):
-        _log.info("Received message from fedora-messaging with topic: %s",
-                 msg.topic)
+        _log.info("Received message: %s", msg.id)
         topic = msg.topic
         body = msg.body
 
