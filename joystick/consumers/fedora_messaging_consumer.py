@@ -21,4 +21,15 @@ class JoyStickController(object):
         body = msg.body
 
         if topic.endswith("pungi.compose.status.change"):
-            print(message.body)
+            _log.debug("Processing %r" % (msg.id))
+            if body['status'] not in self.valid_status:
+                _log.debug("%s is not a valid status" % msg_info["status"])
+                return
+
+            compose_id = body['compose_id']
+            respin = body['respin']
+            compose_date = body['compose_date']
+            release_version = body['release_version']
+        else:
+            _log.debug("Dropping %r" % (topic, msg.id))
+            pass
