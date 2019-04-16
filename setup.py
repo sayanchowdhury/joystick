@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="joystick",
+    name="joystick-py",
     version="0.0.1",
     description="Invoke plume for uploading to cloud",
     license="GPLv3",

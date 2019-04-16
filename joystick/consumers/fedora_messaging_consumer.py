@@ -89,11 +89,13 @@ class JoyStickController(object):
                     _log.debug(error)
                     continue
 
+                """
                 output, error, retcode = self._publish_messages()
                 if not retcode != 0:
                     _log.debug("There was an issue with publishing messages")
                     _log.debug(error)
                     continue
+                """
         else:
             _log.debug("Dropping %r" % (topic, msg.id))
             pass
@@ -104,7 +106,7 @@ class JoyStickController(object):
             'pre-release',
             '--system', 'fedora',
             '--channel', self.channel,
-            '--version', self.release_version
+            '--version', self.release_version,
             '--timestamp', self.timestamp,
             '--respin', self.respin,
             '--board', self.board,
@@ -120,7 +122,7 @@ class JoyStickController(object):
             'plume',
             'release',
             '--system', 'fedora',
-            '--channel', self.channel
+            '--channel', self.channel,
             '--version', self.release_version,
             '--timestamp', self.timestamp,
             '--respin', self.respin,
