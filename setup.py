@@ -9,6 +9,7 @@ setup(
     author_email="sayan.chowdhury2012@gmail.com",
     url="https://pagure.io/joystick",
     packages=find_packages(),
+    include_package_data=True,
     classifiers={
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',
