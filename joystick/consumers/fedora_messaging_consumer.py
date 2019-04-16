@@ -131,6 +131,3 @@ class JoyStickController(object):
         ])
 
         return output, error, retcode
-
-    def _publish_messages(self):
-        raise NotImplementedError

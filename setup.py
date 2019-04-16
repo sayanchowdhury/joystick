@@ -9,4 +9,13 @@ setup(
     author_email="sayan.chowdhury2012@gmail.com",
     url="https://pagure.io/joystick",
     packages=find_packages(),
+    classifiers={
+        'Development Status :: 2 - Pre-Alpha',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU Affero General Public License v3',
+        'Programming Language :: Python :: 3',
+        'Topic :: System :: Systems Administration',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    }
 )
