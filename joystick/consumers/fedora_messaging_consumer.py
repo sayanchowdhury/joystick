@@ -46,22 +46,60 @@ class JoyStickController(object):
                 _log.debug("%s is not a valid status" % msg_info["status"])
                 return
 
+            try:
+                compose_metadata = fedfind.release.get_release(
+                    cid=compose_id).metadata
+            except fedfind.exceptions.UnsupportedComposeError:
+                _log.debug("%s is unsupported composes" % compose_id)
+                return
+
+            images_meta = []
+            self.location = body['location']
+
+            self.channel = self.location.rsplit('/', 3)
+            if not self.channel:
+                _log.debug('channel cannot be empty')
+                return
+
+            self.channel = self.channel[1]
+            if self.channel not in ['cloud', 'branched', 'updates', 'rawhide']:
+                _log.debug('%s is not a valid channel' % self.channel)
+                return
+
             self.compose_id = body['compose_id']
             self.respin = body['respin']
             self.timestamp = body['compose_date']
             self.release_version = body['release_version']
+            self.aws_crendentials = '~/.aws/credentials'
+            for image_type in ['Cloud-Base', 'AtomicHost']:
+                self.image_type = image_type
 
-            success = self._run_pre_release()
+                if self.channel == 'cloud' and self.image_type == 'AtomicHost':
+                    continue
 
-            success = self._run_release()
+                output, error, retcode = self._run_pre_release()
+                if not retcode != 0:
+                    _log.debug("There was an issue with pre-release")
+                    _log.debug(error)
+                    continue
 
-            success = self._publish_messages()
+                output, error, retcode = self._run_release()
+                if not retcode != 0:
+                    _log.debug("There was an issue with release")
+                    _log.debug(error)
+                    continue
+
+                output, error, retcode = self._publish_messages()
+                if not retcode != 0:
+                    _log.debug("There was an issue with publishing messages")
+                    _log.debug(error)
+                    continue
         else:
             _log.debug("Dropping %r" % (topic, msg.id))
             pass
 
     def _run_pre_release(self):
-        self.run_command([
+        output, error, retcode = self.run_command([
             'plume',
             'pre-release',
             '--system', 'fedora',
@@ -75,8 +113,10 @@ class JoyStickController(object):
             "--aws-credentials", self.aws_crendentials,
         ])
 
+        return output, error, retcode
+
     def _run_release(self):
-        self.run_command([
+        output, error, retcode = self.run_command([
             'plume',
             'release',
             '--system', 'fedora',
@@ -89,6 +129,8 @@ class JoyStickController(object):
             '--image-type', self.image_type,
             '--aws-credentials', self.aws_credentials
         ])
+
+        return output, error, retcode
 
     def _publish_messages(self):
         raise NotImplementedError
