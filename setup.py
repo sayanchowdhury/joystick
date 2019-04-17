@@ -9,6 +9,8 @@ setup(
     author_email="sayan.chowdhury2012@gmail.com",
     url="https://pagure.io/joystick",
     packages=find_packages(),
+    package_data={'': ['LICENSE', 'fedora-messaging.toml.example', 'README.md']},
+    data_files=[('config', ['fedora-messaging.toml.example'])],
     include_package_data=True,
     classifiers={
         'Development Status :: 2 - Pre-Alpha',
