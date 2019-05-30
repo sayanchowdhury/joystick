@@ -66,4 +66,3 @@ if __name__ == "__main__":
     msg_id = parse_arguments()
     message = get_message(msg_id)
     publish(message)
-
