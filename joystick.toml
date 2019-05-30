@@ -1,14 +1,8 @@
 # Example configuration for Fedora Messaging
 # For complete documentation check
-#  https://fedora-messaging.readthedocs.io/en/latest/configuration.html.
+# https://fedora-messaging.readthedocs.io/en/latest/configuration.html.
 
-amqp_url = "amqps://plume{{ env_suffix }}:@rabbitmq{{ env_suffix }}.phx2.fedoraproject.org/%2Fpubsub"
-
-{% if env == "staging" %}
-topic_prefix = "org.fedoraproject.stg"
-{% else %}
-topic_prefix = "org.fedoraproject.prod"
-{% endif %}
+amqp_url = "amqps://fedora:@rabbitmq.fedoraproject.org/%2Fpublic_pubsub"
 
 publish_exchange = "amq.topic"
 passive_declares = false
@@ -16,18 +10,29 @@ passive_declares = false
 callback = "joystick.consumers.fedora_messaging_consumer:JoyStickController"
 
 [tls]
-ca_cert = "/etc/pki/rabbitmq/ca/joystick.ca"
-keyfile = "/etc/pki/rabbitmq/key/joystick.key"
-certfile = "/etc/pki/rabbitmq/crt/joystick.crt"
+ca_cert = "/etc/fedora-messaging/cacert.pem"
+keyfile = "/etc/fedora-messaging/fedora-key.pem"
+certfile = "/etc/fedora-messaging/fedora-cert.pem"
 
 [client_properties]
 app = "joystick"
 
-[queues."joystick{{ env_suffix }}"]
+[exchanges."amq.topic"]
+type = "topic"
+durable = true
+auto_delete = false
+arguments = {}
+
+[queues."6d0c4921-a865-4b10-8d13-47196a66289c"]
 durable = true
 auto_delete = false
 exclusive = false
 arguments = {}
+
+[[bindings]]
+queue = "6d0c4921-a865-4b10-8d13-47196a66289c"
+exchange = "amq.topic"
+routing_keys = ["#"]
 
 [qos]
 prefetch_size = 0
@@ -57,5 +62,7 @@ handlers = ["console"]
 # joystick consumer configuration
 [consumer_config]
 topic_prefix = 'org.fedoraproject'
-environment = '{{ env }}'
+environment = 'prod'
 regions = ["us-east-2"]
+aws_access_key_id = ''
+aws_secret_access_key = ''
