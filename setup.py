@@ -2,16 +2,16 @@ from setuptools import setup, find_packages
 
 setup(
     name="joystick-py",
-    version="0.0.3",
+    version="0.0.4",
     description="Invoke plume for uploading to cloud",
     license="GPLv3",
     author="Sayan Chowdhury",
     author_email="sayan.chowdhury2012@gmail.com",
     url="https://pagure.io/joystick",
-    packages=find_packages(),
-    package_data={'': ['LICENSE', 'fedora-messaging.toml.example', 'README.md']},
-    data_files=[('config', ['fedora-messaging.toml.example'])],
     include_package_data=True,
+    packages=['joystick', 'joystick.consumers'],
+    package_dir={'joystick': 'joystick'},
+    package_data={'joystick': ['config/joystick.toml']},
     classifiers={
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',

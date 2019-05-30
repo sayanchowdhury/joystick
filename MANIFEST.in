@@ -1,3 +1,5 @@
 include LICENSE
 include README.md
 include fedora-messaging.toml.example
+
+recursive-include scripts *.py
