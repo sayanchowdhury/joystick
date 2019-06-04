@@ -28,8 +28,7 @@ class JoyStickController(object):
     def run_command(self, command):
         _log.info("Starting the command: %r" % command)
         ret = subprocess.Popen(command, stdin=subprocess.PIPE,
-                               stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                               close_fds=True)
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = ret.communicate()
         retcode = ret.returncode
         _log.info("Finished executing the command: %r" % command)
