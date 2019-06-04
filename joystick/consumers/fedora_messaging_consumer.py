@@ -68,7 +68,7 @@ class JoyStickController(object):
                 compose_metadata = fedfind.release.get_release(
                     cid=compose_id).metadata
             except fedfind.exceptions.UnsupportedComposeError:
-                _log.debug("%s is unsupported composes" % compose_id)
+                _log.error("%s is unsupported composes" % compose_id)
                 return
 
             self.location = msg_info['location']
