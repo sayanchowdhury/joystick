@@ -24,6 +24,9 @@ class JoyStickController(object):
         self.aws_secret_access_key = self.config['aws_secret_access_key']
         self.valid_status = ('FINISHED_INCOMPLETE', 'FINISHED')
         self.regions = self.config['regions']
+        self.environment = self.config['environment']
+        self.topic = "org.fedoraproject.%s.pungi.compose.status.change" % (
+                self.environment)
 
     def run_command(self, command):
         _log.info("Starting the command: %r" % command)
@@ -54,8 +57,7 @@ class JoyStickController(object):
         else:
             msg_info = body['msg']
 
-
-        if topic.endswith("pungi.compose.status.change"):
+        if topic == self.topic:
             _log.debug("Processing %r" % (msg.id))
             if msg_info['status'] not in self.valid_status:
                 _log.debug("%s is not a valid status" % msg_info["status"])
