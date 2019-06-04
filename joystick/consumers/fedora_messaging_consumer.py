@@ -82,7 +82,6 @@ class JoyStickController(object):
                 _log.debug('%s is not a valid channel' % self.channel)
                 return
 
-            from pdb import set_trace;set_trace()
             self.compose_id = msg_info['compose_id']
             self.respin = msg_info['compose_respin']
             self.timestamp = msg_info['compose_date']

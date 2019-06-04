@@ -8,9 +8,7 @@ RUN dnf -y install \
     git-core \
     mantle \
     fedora-messaging \
-    python3-fedfind
+    python3-fedfind \
+    python3-boto3
 
-ENV FEDORA_MESSAGING_CONF=/etc/fedora-messaging/joystick.toml
-
-RUN pip3 install joystick-py && \
-    mkdir -p /etc/fedora-messaging
+RUN pip3 install joystick-py
