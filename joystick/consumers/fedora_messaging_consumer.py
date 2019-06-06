@@ -30,21 +30,22 @@ class JoyStickController(object):
 
     def run_command(self, command):
         _log.info("Starting the command: %r" % command)
-        ret = subprocess.Popen(command, stdin=subprocess.PIPE,
-                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = ret.communicate()
-        retcode = ret.returncode
+        process = subprocess.run(command,
+                                 capture_output=True)
+        returncode = process.returncode
+        error = process.stderr.decode('utf-8')
+        output = process.stdout.decode('utf-8')
         _log.info("Finished executing the command: %r" % command)
 
-        if retcode != 0:
+        if returncode != 0:
             _log.error("Command failed during run")
-            _log.error(
-                "(output) %s, (error) %s, (retcode) %s" % (out, err, retcode))
+            _log.error("(output) %s, (error) %s, (retcode) %s" % (
+                output, error, returncode))
         else:
-            _log.debug(
-                "(output) %s, (error) %s, (retcode) %s" % (out, err, retcode))
+            _log.debug("(output) %s, (error) %s, (retcode) %s" % (
+                output, error, returncode))
 
-        return out, err, retcode
+        return output, error, returncode
 
     def __call__(self, msg):
         _log.info("Received message: %s", msg.id)
