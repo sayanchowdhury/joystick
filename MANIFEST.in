@@ -3,3 +3,4 @@ include README.md
 include fedora-messaging.toml.example
 
 recursive-include scripts *.py
+recursive-include tests *.py

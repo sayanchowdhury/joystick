@@ -12,6 +12,11 @@ setup(
     packages=['joystick', 'joystick.consumers'],
     package_dir={'joystick': 'joystick'},
     package_data={'joystick': ['config/joystick.toml']},
+    tests_require=[
+        'pytest',
+        'pytest-cov',
+        'mock'
+    ],
     classifiers={
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',
