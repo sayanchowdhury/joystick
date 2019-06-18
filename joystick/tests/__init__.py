@@ -88,3 +88,7 @@ class ProcessFailure(object):
         self.returncode = 1
         self.stderr = b"Command Failed"
         self.stdout = b"Failure"
+
+class GetRelease(object):
+    def __init__(self):
+        self.metadata = {}

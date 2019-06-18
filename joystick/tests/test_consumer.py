@@ -1,11 +1,12 @@
 import mock
 import os
 import unittest
+import fedfind.exceptions
 
 from fedora_messaging.config import conf
 from joystick.consumers.fedora_messaging_consumer import JoyStickController
-from tests import Client, Message, NoMsgInBodyMessage, NonMatchingTopicMessage
-from tests import ProcessSuccess, ProcessFailure
+from joystick.tests import Client, Message, NoMsgInBodyMessage, NonMatchingTopicMessage
+from joystick.tests import ProcessSuccess, ProcessFailure, GetRelease
 
 RUN_COMMAND_OUTPUT_SUCCESS = ProcessSuccess()
 RUN_COMMAND_OUTPUT_FAILURE = ProcessFailure()
@@ -15,7 +16,7 @@ BOTO_RETURN_VALUE = Client()
 
 @mock.patch('boto3.client', return_value=BOTO_RETURN_VALUE)
 def test_generate_ami_upload_list(mock_boto_client):
-    config_path = os.path.abspath("tests/testjoystick.toml")
+    config_path = os.path.abspath("joystick/tests/testjoystick.toml")
     conf.load_config(config_path=config_path)
     js = JoyStickController()
     setattr(js, 'compose_id', 'Fedora-Compose-ID')
@@ -134,39 +135,51 @@ def test_process_upload_push_upload_msg_fail(mock_log, mock_run_pre_release,
     mock_log.assert_called_with('Command Failed')
 
 
+@mock.patch('joystick.consumers.fedora_messaging_consumer._log.debug')
+def test_invalid_status(mock_log):
+    msg_info = {
+        'id': 'random id',
+        'status': 'STARTING',
+        'location': 'https://someplace.org/path/to/image'
+    }
+    js = JoyStickController()
+    js.process_joystick_topic(msg_info)
 
-"""
-class TestJoystickController(unittest.TestCase):
-    @mock.patch('subprocess.run',
-                mock.MagicMock(return_value=RUN_COMMAND_OUTPUT_SUCCESS))
-    def test_run_command_success(self):
-        output = self.joystick.run_command('ls -l')
+    mock_log.assert_called_with('STARTING is not a valid status')
 
-    @mock.patch('subprocess.run',
-                mock.MagicMock(return_value=RUN_COMMAND_OUTPUT_FAIL))
-    def test_run_command_fail(self):
-        output = self.joystick.run_command('sl -l')
 
-    @mock.patch('JoystickController.process_upload',
-                return_value=True)
-    def test_process_joystick_topic_empty_channel(self):
-        self.joystick._process_joystick_topic(msg_info)
+@mock.patch('fedfind.release.get_release')
+@mock.patch('joystick.consumers.fedora_messaging_consumer._log.error')
+def test_fedfind_get_release_exception(mock_log, mock_get_release):
+    msg_info = {
+        'id': 'random id',
+        'status': 'FINISHED',
+        'location': 'https://someplace.org/path/to/image',
+        'compose_id': 'Random compose id',
+    }
 
-    @mock.patch('JoystickController.process_upload',
-                return_value=True)
-    @mock.patch('fedfind.release.get_release',
-                return_value=True)
-    def test_process_joystick_topic_invalid_channel(self, mock_process_upload,
-            mock_get_release):
-        self.joystick._process_joystick_topic(msg_info)
+    mock_get_release.side_effect = fedfind.exceptions.UnsupportedComposeError()
+    js = JoyStickController()
+    js.process_joystick_topic(msg_info)
 
-    @mock.patch('JoystickController.process_joystick_topic',
-                return_value=True)
-    def test_cls_call_method(self):
-        self.JoystickController.__call__(msg)
+    mock_log.assert_called_with('Random compose id id unsupported composes')
 
-    @mock.patch('boto3.client', return_value=BOTO_RETURN_VALUE)
-    def test_generate_ami_upload_list(self, mock_boto_client):
-        js = JoyStickController()
-        js.generate_ami_upload_list()
-    """
+
+@mock.patch('fedfind.release.get_release', return_value=GetRelease())
+@mock.patch('joystick.consumers.fedora_messaging_consumer.JoyStickController.process_upload', return_value=[])
+@mock.patch('joystick.consumers.fedora_messaging_consumer._log.debug')
+def test_fedfind_get_release_exception(mock_log, mock_process_upload, mock_get_release):
+    msg_info = {
+        'id': 'random id',
+        'status': 'FINISHED',
+        'location': 'https://someplace.org/cloud/path/image',
+        'compose_id': 'Random compose id',
+        'compose_respin': 1,
+        'compose_date': '23062019',
+        'release_version': '30',
+    }
+
+    js = JoyStickController()
+    js.process_joystick_topic(msg_info)
+
+    assert mock_process_upload.called

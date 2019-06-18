@@ -15,7 +15,8 @@ setup(
     tests_require=[
         'pytest',
         'pytest-cov',
-        'mock'
+        'mock',
+        'fedfind'
     ],
     classifiers={
         'Development Status :: 2 - Pre-Alpha',
